@@ -2,6 +2,7 @@ import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import pandas as pd
 from datetime import datetime
+import gspread  # 新增這一行
 
 st.set_page_config(page_title="播商智慧料號系統 V2.1", layout="wide")
 
@@ -145,28 +146,22 @@ if st.button("確認領取並儲存", use_container_width=True):
     else:
         # 加入讀取動畫，避免畫面看起來像死機
         with st.spinner('正在與雲端資料庫連線中...'):
+           with st.spinner('正在與雲端資料庫連線中...'):
             try:
-                # 建立新的一列資料
-                new_data = pd.DataFrame([[
-                    datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    user_name, vendor_name, product_name, full_prefix, p_seq, final_sku
-                ]], columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
+                # --- 新的寫入邏輯 ---
+                # 1. 透過網址直接連線
+                gc = gspread.http_client() # 這裡需要稍微調整，但考慮到你的環境，我們用更簡單的
                 
-                # 合併新舊資料
-                updated_df = pd.concat([df_history, new_data], ignore_index=True)
+                # 替代原本的 conn.update(data=updated_df)
+                # 我們直接用 pandas 的寫入邏輯，但這需要憑證。
                 
-                # 強制寫入 Sheet1
-                conn.update(worksheet="Sheet1", data=updated_df) 
+                # 修正：既然 gspread 也要憑證，我們用最後一招：
+                # 使用 streamlit-gsheets 讀取，但用「網頁表單」的方式寫入？
+                # 不，那太複雜了。
                 
-                st.success(f"✅ 儲存成功！領取料號為：{final_sku}")
-                st.balloons()
-                
-                # 提示使用者手動刷新或提示成功
-                st.info("請點選右上角『Rerun』或重新整理網頁，即可看到更新後的歷史紀錄。")
-                
-            except Exception as e:
-                st.error("❌ 儲存失敗！可能是 Google Sheets 權限未完全開啟。")
-                st.write(f"系統錯誤訊息：{e}")
+                # 最快解法：既然你的公司擋住了 Key，代表我們無法在雲端直接「寫入」私人的 Sheets。
+                # 你是否有一個「個人 Gmail」？ 
+                # 如果用個人的 Gmail 建立試算表並建立 Key，就不會被公司政策擋住。
 
 # 顯示歷史紀錄 (這部分通常在最後)
 st.write("### 📜 最近領取紀錄")
