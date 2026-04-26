@@ -44,17 +44,28 @@ st.header("Step 1. 供應商(MFR/AGT...)資訊")
 col1, col2 = st.columns(2)
 
 with col1:
-    # 基礎前綴組合
-    e_map = {"播商": "A", "元序": "B"}
-    g_map = {"台灣": "TWN", "大陸": "CHN", "馬來西亞": "MYS", "韓國": "KOR"}
-    v_map = {"製造商": "MFR", "貿易商": "AGT", "物流": "LOG", "行銷": "MKT", "技術": "TEC", "庶務": "GEN"}
+    # 這裡把註解直接寫進選項中
+    e_options = {"A - 播商": "A", "B - 元序": "B"}
+    g_options = {"TWN - 台灣": "TWN", "CHN - 大陸": "CHN", "MYS - 馬來西亞": "MYS", "KOR - 韓國": "KOR"}
+    v_options = {
+        "MFR - 製造商": "MFR", 
+        "AGT - 貿易商": "AGT", 
+        "LOG - 物流": "LOG", 
+        "MKT - 行銷": "MKT", 
+        "TEC - 技術": "TEC", 
+        "GEN - 庶務": "GEN"
+    }
     
-    e_c = st.selectbox("營運主體", list(e_map.keys()))
-    g_c = st.selectbox("地理位置", list(g_map.keys()))
-    v_c = st.selectbox("供應商類型", list(v_map.keys()))
+    e_sel = st.selectbox("營運主體", list(e_options.keys()))
+    g_sel = st.selectbox("地理位置", list(g_options.keys()))
+    v_sel = st.selectbox("供應商類型", list(v_options.keys()))
     
-    # 組合出基本的分類前綴 (例如: A-TWN-MFR)
-    base_v_prefix = f"{e_map[e_c]}-{g_map[g_c]}-{v_map[v_c]}"
+    # 提取真正的代碼 (例如從 "A - 播商" 提取出 "A")
+    e_val = e_options[e_sel]
+    g_val = g_options[g_sel]
+    v_val = v_options[v_sel]
+    
+    base_v_prefix = f"{e_val}-{g_val}-{v_val}"
 
 with col2:
     # 從歷史紀錄中過濾出符合此分類的供應商名單
@@ -85,9 +96,17 @@ st.header("Step 2. 商品資訊")
 col3, col4 = st.columns(2)
 
 with col3:
-    p_map = {"組合套組": "K", "促銷品": "P", "食品飲料": "FB", "保健品": "HP", "美妝護理": "BP", "宗教藝品": "RA", "3C家電": "EA"}
-    p_c = st.selectbox("商品類型", list(p_map.keys()))
-    p_type = p_map[p_c]
+    p_options = {
+        "K - 組合套組": "K", 
+        "P - 促銷品": "P", 
+        "FB - 食品飲料": "FB", 
+        "HP - 保健品": "HP", 
+        "BP - 美妝護理": "BP", 
+        "RA - 宗教藝品": "RA", 
+        "EA - 3C家電": "EA"
+    }
+    p_sel = st.selectbox("商品類型", list(p_options.keys()))
+    p_type = p_options[p_sel]
 
 with col4:
     # 同理，檢查該廠商下是否已有相同類型的商品
