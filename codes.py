@@ -124,8 +124,7 @@ with col4:
         product_name = p_choice
         st.warning(f"注意：此品項已存在，若再次領取將生成新的流水號")
 
-# --- Step 3. 生成料號 ---
-# 最終編碼前綴格式：A-TWN-MFR001-FB
+# --- Step 3. 生成料號與儲存 ---
 full_prefix = f"{final_v_prefix}-{p_type}"
 p_seq = get_next_sequence(full_prefix, df_history, 4)
 final_sku = f"{full_prefix}{p_seq}"
@@ -134,28 +133,48 @@ st.divider()
 st.subheader("📋 預計生成的料號")
 st.code(final_sku, language="text")
 
+# 使用一個變數來控制按鈕狀態
 if st.button("確認領取並儲存", use_container_width=True):
-    if not user_name or not vendor_name or not product_name:
-        st.error("❌ 姓名、供應商與品名皆為必填！")
+    # 防呆檢查
+    if not user_name:
+        st.error("❌ 姓名為必填！")
+    elif v_choice == "+ 新增供應商" and not vendor_name:
+        st.error("❌ 請輸入供應商名稱！")
+    elif p_choice == "+ 新增品項" and not product_name:
+        st.error("❌ 請輸入商品品名！")
     else:
-        new_data = pd.DataFrame([[
-            datetime.now().strftime("%Y-%m-%d %H:%M"),
-            user_name, vendor_name, product_name, full_prefix, p_seq, final_sku
-        ]], columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
-        
-        updated_df = pd.concat([df_history, new_data], ignore_index=True)
-        # 替代 conn.update 的更穩定寫法
-        try:
-            # 嘗試更新到 Google Sheets
-            conn.update(worksheet="Sheet1", data=updated_df)
-            st.success("✅ 資料已成功同步至 Google Sheets！")
-            st.balloons()
-            # 延遲一下下讓使用者看到彩帶，然後刷新
-            st.rerun()
-        except Exception as e:
-            # 如果失敗了，噴出紅字錯誤
-            st.error(f"❌ 儲存失敗，請檢查 Google Sheets 權限。")
-            st.info(f"詳細錯誤訊息: {e}")
+        # 加入讀取動畫，避免畫面看起來像死機
+        with st.spinner('正在與雲端資料庫連線中...'):
+            try:
+                # 建立新的一列資料
+                new_data = pd.DataFrame([[
+                    datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    user_name, vendor_name, product_name, full_prefix, p_seq, final_sku
+                ]], columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
+                
+                # 合併新舊資料
+                updated_df = pd.concat([df_history, new_data], ignore_index=True)
+                
+                # 強制寫入 Sheet1
+                conn.update(worksheet="Sheet1", data=updated_df) 
+                
+                st.success(f"✅ 儲存成功！領取料號為：{final_sku}")
+                st.balloons()
+                
+                # 提示使用者手動刷新或提示成功
+                st.info("請點選右上角『Rerun』或重新整理網頁，即可看到更新後的歷史紀錄。")
+                
+            except Exception as e:
+                st.error("❌ 儲存失敗！可能是 Google Sheets 權限未完全開啟。")
+                st.write(f"系統錯誤訊息：{e}")
+
+# 顯示歷史紀錄 (這部分通常在最後)
+st.write("### 📜 最近領取紀錄")
+# 如果沒資料就顯示 empty 提示，有資料就顯示表格
+if not df_history.empty:
+    st.dataframe(df_history.iloc[::-1], use_container_width=True)
+else:
+    st.info("目前資料庫尚無紀錄。")
 
 # 顯示歷史紀錄
 st.write("### 📜 最近領取紀錄")
