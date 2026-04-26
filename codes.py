@@ -146,15 +146,16 @@ if st.button("確認領取並儲存", use_container_width=True):
         updated_df = pd.concat([df_history, new_data], ignore_index=True)
         # 替代 conn.update 的更穩定寫法
         try:
+            # 嘗試更新到 Google Sheets
             conn.update(worksheet="Sheet1", data=updated_df)
             st.success("✅ 資料已成功同步至 Google Sheets！")
             st.balloons()
+            # 延遲一下下讓使用者看到彩帶，然後刷新
             st.rerun()
         except Exception as e:
-            st.error(f"儲存失敗，請檢查 Google Sheets 權限。錯誤代碼: {e}")
-        st.success("✅ 資料已成功同步至 Google Sheets！")
-        st.balloons()
-        st.rerun()
+            # 如果失敗了，噴出紅字錯誤
+            st.error(f"❌ 儲存失敗，請檢查 Google Sheets 權限。")
+            st.info(f"詳細錯誤訊息: {e}")
 
 # 顯示歷史紀錄
 st.write("### 📜 最近領取紀錄")
