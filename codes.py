@@ -144,7 +144,7 @@ if st.button("確認領取並儲存", use_container_width=True):
         ]], columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
         
         updated_df = pd.concat([df_history, new_data], ignore_index=True)
-        conn.update(data=updated_df)
+        conn.update(data=updated_df, worksheet="Sheet1")
         st.success("✅ 資料已成功同步至 Google Sheets！")
         st.balloons()
         st.rerun()
