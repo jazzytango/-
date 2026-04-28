@@ -1,16 +1,37 @@
 import streamlit as st
-from st_gsheets_connection import GSheetsConnection
 import pandas as pd
-from datetime import datetime
-import gspread  # 新增這一行
+import gspread
+from google.oauth2.service_account import Credentials
 
-st.set_page_config(page_title="播商智慧料號系統 V2.1", layout="wide")
+# --- 1. 設定連線函數 (使用您下載的 JSON Secrets) ---
+@st.cache_resource
+def get_gspread_client():
+    scope = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    # 對應您在 Streamlit Secrets 貼的 [gcp_service_account]
+    creds_dict = st.secrets["gcp_service_account"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+    return gspread.authorize(creds)
 
-# --- 1. 連結 Google Sheets ---
-conn = st.connection("gsheets", type=GSheetsConnection)
+# --- 2. 執行連線並取得資料 ---
+try:
+    gc = get_gspread_client()
+    
+    # ⚠️ 這裡請換成您那份 Google Sheet 的網址
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/您的試算表ID/edit"
+    
+    sh = gc.open_by_url(spreadsheet_url)
+    worksheet = sh.get_worksheet(0) # 讀取第一個分頁
+    
+    # 讀取資料
+    data = worksheet.get_all_records()
+    df_history = pd.DataFrame(data)
 
-def get_history():
-    try:
+except Exception as e:
+    st.error(f"❌ 連線 Google Sheet 失敗: {e}")
+    st.stop()
         # ttl=0 確保每次操作都抓到最新數據，避免多人同時領號衝突
         return conn.read(ttl=0)
     except:
