@@ -147,7 +147,7 @@ if st.button("確認領取並儲存", use_container_width=True):
         # 加入讀取動畫，避免畫面看起來像死機
         with st.spinner('正在與雲端資料庫連線中...'):
            with st.spinner('正在與雲端資料庫連線中...'):
-            try:
+
                 # --- 新的寫入邏輯 ---
                 # 1. 透過網址直接連線
                 gc = gspread.http_client() # 這裡需要稍微調整，但考慮到你的環境，我們用更簡單的
