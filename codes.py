@@ -32,7 +32,9 @@ try:
 except Exception as e:
     st.error(f"❌ 連線 Google Sheet 失敗: {e}")
     st.stop()
-        # ttl=0 確保每次操作都抓到最新數據，避免多人同時領號衝突
+def get_history():
+    try:
+        # ttl=0 確保每次操作都抓到最新數據
         return conn.read(ttl=0)
     except:
         return pd.DataFrame(columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
