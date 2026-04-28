@@ -163,14 +163,12 @@ if st.button("確認領取並儲存", use_container_width=True):
                 # 你是否有一個「個人 Gmail」？ 
                 # 如果用個人的 Gmail 建立試算表並建立 Key，就不會被公司政策擋住。
 
-# 顯示歷史紀錄 (這部分通常在最後)
-st.write("### 📜 最近領取紀錄")
-# 如果沒資料就顯示 empty 提示，有資料就顯示表格
-if not df_history.empty:
-    st.dataframe(df_history.iloc[::-1], use_container_width=True)
-else:
-    st.info("目前資料庫尚無紀錄。")
-
-# 顯示歷史紀錄
-st.write("### 📜 最近領取紀錄")
-st.dataframe(df_history.iloc[::-1], use_container_width=True)
+try:
+    st.write("### 📜 最近領取紀錄")
+    if not df_history.empty:
+        # 將資料反過來顯示（最新的在上面），並撐滿寬度
+        st.dataframe(df_history.iloc[::-1], use_container_width=True)
+    else:
+        st.info("目前資料庫尚無紀錄。")
+except Exception as e:
+    st.error(f"顯示歷史紀錄時發生錯誤: {e}")
