@@ -32,11 +32,11 @@ try:
 except Exception as e:
     st.error(f"❌ 連線 Google Sheet 失敗: {e}")
     st.stop()
+
 def get_history():
-    try:
-        # ttl=0 確保每次操作都抓到最新數據
-        return conn.read(ttl=0)
-    except:
+    try:                     # <--- 這裡前面要有 4 個空白鍵
+        return conn.read(ttl=0) # <--- 這裡前面要有 8 個空白鍵
+    except:                  # <--- 這裡前面要有 4 個空白鍵
         return pd.DataFrame(columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
 
 # --- 2. 算號邏輯優化 ---
