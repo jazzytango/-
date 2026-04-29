@@ -165,11 +165,11 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
     # 這裡前面有 12 個空格 (比 if 多 4 格)
         save_data = [
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        st.session_state.user_name,
+        user_name,
         selected_mfr,
         selected_product,
-        prefix,
-        str(next_seq),
+        full_prefix,
+        str(p_seq),
         final_sku
         ]
     
