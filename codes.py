@@ -178,9 +178,8 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
     
         st.success(f"✅ 儲存成功！料號 {final_sku} 已寫入系統。")
         st.balloons()
-                    
-        except Exception as e:
-                    st.error(f"❌ 寫入失敗，請檢查網址或權限: {str(e)}")
+    except Exception as e:
+        st.error(f"❌ 寫入失敗，請檢查網址或權限: {str(e)}")
 
         # --- 4. 輔助資訊顯示 ---
         st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
