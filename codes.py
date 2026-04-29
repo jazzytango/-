@@ -173,8 +173,7 @@ if st.button("確認領取並儲存", use_container_width=True):
 
                 # --- 新的寫入邏輯 ---
                 # 1. 透過網址直接連線
-                gc = gspread.http_client() # 這裡需要稍微調整，但考慮到你的環境，我們用更簡單的
-                
+                                
                 # 替代原本的 conn.update(data=updated_df)
                 # 我們直接用 pandas 的寫入邏輯，但這需要憑證。
                 
