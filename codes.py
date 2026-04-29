@@ -175,11 +175,14 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         final_v_name = vendor_name if v_choice == "+ 新增供應商" else v_choice
         final_p_name = product_name if p_choice == "+ 新增品項" else p_choice
         
-        is_duplicate = not refresh_df[
-            (refresh_df.iloc[:, 2] == final_v_name) &   # 第 3 欄 (C欄)
-            (refresh_df.iloc[:, 3] == final_p_name) &   # 第 4 欄 (D欄)
-            (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
-        ].empty
+        # 🔄 修改後的防重複檢查邏輯
+        is_duplicate = False
+        if not refresh_df.empty:
+            is_duplicate = not refresh_df[
+                (refresh_df.iloc[:, 2] == final_v_name) &   # 第 3 欄 (C欄)
+                (refresh_df.iloc[:, 3] == final_p_name) &   # 第 4 欄 (D欄)
+                (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
+            ].empty
         
         if is_duplicate:
             st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
