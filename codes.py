@@ -162,7 +162,7 @@ st.code(final_sku, language="text")
     else:
         # --- 3. 儲存按鈕 ---
         # 這裡前面有 8 個空格，對齊 169 行的 else 邏輯
-        if st.button("確認領取並儲存", type="primary", use_container_width=True):
+    if st.button("確認領取並儲存", type="primary", use_container_width=True):
             try:
                 # 這裡前面有 12 個空格 (比 if 多 4 格)
                 save_data = [
