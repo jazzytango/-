@@ -170,13 +170,13 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         selected_product,
         prefix,
         str(next_seq),
-        final_code
+        final_sku
         ]
     
         # 執行寫入
         sh.get_worksheet(0).append_row(save_data)
     
-        st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
+        st.success(f"✅ 儲存成功！料號 {final_sku} 已寫入系統。")
         st.balloons()
                     
         except Exception as e:
