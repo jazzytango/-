@@ -167,7 +167,7 @@ if st.button("確認領取並儲存", use_container_width=True):
     elif p_choice == "+ 新增品項" and not product_name:
         st.error("❌ 請輸入商品品名！")
     else:
-  else:
+  
         # --- 3. 儲存按鈕 ---（這行前面有 8 個空格）
         if st.button("確認領取並儲存", type="primary"):
             try:
