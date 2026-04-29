@@ -20,7 +20,7 @@ try:
     gc = get_gspread_client()
     
     # ⚠️ 這裡請換成您那份 Google Sheet 的網址
-    spreadsheet_url = "https://https://docs.google.com/spreadsheets/d/1pHmoUVvjbIc1kh7nnChLELWVgU9wwe9WpreAAkuWr7I/edit"
+    spreadsheet_url = "https://docs.google.com/spreadsheets/d/1pHmoUVvjbIc1kh7nnChLELWVgU9wwe9WpreAAkuWr7I/edit"
     
     sh = gc.open_by_url(spreadsheet_url)
     worksheet = sh.get_worksheet(0) # 讀取第一個分頁
