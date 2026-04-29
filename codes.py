@@ -148,6 +148,7 @@ with col4:
         product_name = p_choice
         st.warning(f"注意：此品項已存在，若再次領取將生成新的流水號")
 
+# 第 151 行
 # --- Step 3. 生成料號與儲存 ---
 full_prefix = f"{final_v_prefix}-{p_type}"
 p_seq = get_next_sequence(full_prefix, df_history, 4)
@@ -157,7 +158,23 @@ st.divider()
 st.subheader("📋 預計生成的料號")
 st.code(final_sku, language="text")
 
-# 使用一個變數來控制按鈕狀態
+if st.button("確認領取並儲存", type="primary", use_container_width=True):
+    try:
+        save_data = [
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            st.session_state.user_name,
+            selected_mfr,
+            selected_product,
+            prefix,
+            str(next_seq),
+            final_code
+        ]
+        sh.get_worksheet(0).append_row(save_data)
+        st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
+        st.balloons()
+    except Exception as e:
+        st.error(f"❌ 寫入失敗: {str(e)}")
+        # 使用一個變數來控制按鈕狀態
 
         # --- 3. 儲存按鈕 ---
         # 這裡前面有 8 個空格，對齊 169 行的 else 邏輯
