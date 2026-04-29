@@ -167,23 +167,29 @@ if st.button("確認領取並儲存", use_container_width=True):
     elif p_choice == "+ 新增品項" and not product_name:
         st.error("❌ 請輸入商品品名！")
     else:
-        # 加入讀取動畫，避免畫面看起來像死機
-        with st.spinner('正在與雲端資料庫連線中...'):
-           with st.spinner('正在與雲端資料庫連線中...'):
+  else:
+        # --- 3. 儲存按鈕 ---（這行前面有 8 個空格）
+        if st.button("確認領取並儲存", type="primary"):
+            try:
+                new_row = [
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    st.session_state.user_name,
+                    selected_mfr,
+                    selected_product,
+                    prefix,
+                    next_seq,
+                    final_code
+                ]
+                worksheet.append_row(new_row)
+                st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
+                st.balloons() 
+            except Exception as e:
+                st.error(f"❌ 儲存失敗: {e}")
 
-                # --- 新的寫入邏輯 ---
-                # 1. 透過網址直接連線
-                                
-                # 替代原本的 conn.update(data=updated_df)
-                # 我們直接用 pandas 的寫入邏輯，但這需要憑證。
-                
-                # 修正：既然 gspread 也要憑證，我們用最後一招：
-                # 使用 streamlit-gsheets 讀取，但用「網頁表單」的方式寫入？
-                # 不，那太複雜了。
-                
-                # 最快解法：既然你的公司擋住了 Key，代表我們無法在雲端直接「寫入」私人的 Sheets。
-                # 你是否有一個「個人 Gmail」？ 
-                # 如果用個人的 Gmail 建立試算表並建立 Key，就不會被公司政策擋住。
+        # --- 4. 輔助資訊顯示 ---（請把這行往右推，對齊 if 按鈕那一行）
+        st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
+
+# 這裡才是原本程式碼剩下的部分（例如顯示最近紀錄的 try...）  
 
 try:
     st.write("### 📜 最近領取紀錄")
