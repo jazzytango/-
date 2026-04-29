@@ -176,9 +176,9 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         final_p_name = product_name if p_choice == "+ 新增品項" else p_choice
         
         is_duplicate = not refresh_df[
-            (refresh_df['供應商名稱'] == final_v_name) & 
-            (refresh_df['商品名稱'] == final_p_name) & 
-            (refresh_df['最終料號'] == actual_sku)
+            (refresh_df.iloc[:, 2] == final_v_name) &   # 第 3 欄 (C欄)
+            (refresh_df.iloc[:, 3] == final_p_name) &   # 第 4 欄 (D欄)
+            (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
         ].empty
         
         if is_duplicate:
