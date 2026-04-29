@@ -158,20 +158,13 @@ st.subheader("📋 預計生成的料號")
 st.code(final_sku, language="text")
 
 # 使用一個變數來控制按鈕狀態
-if st.button("確認領取並儲存", use_container_width=True):
-    # 防呆檢查
-    if not user_name:
-        st.error("❌ 姓名為必填！")
-    elif v_choice == "+ 新增供應商" and not vendor_name:
-        st.error("❌ 請輸入供應商名稱！")
-    elif p_choice == "+ 新增品項" and not product_name:
-        st.error("❌ 請輸入商品品名！")
+# 這是第 169 行的 else: (請確保對齊前面的 if)
     else:
-  
-# --- 3. 儲存按鈕 ---
-        if st.button("確認領取並儲存", type="primary"):
+        # --- 3. 儲存按鈕 ---
+        # 這裡前面有 8 個空格，對齊 169 行的 else 邏輯
+        if st.button("確認領取並儲存", type="primary", use_container_width=True):
             try:
-                # 重新組合要寫入的資料
+                # 這裡前面有 12 個空格 (比 if 多 4 格)
                 save_data = [
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     st.session_state.user_name,
@@ -182,11 +175,11 @@ if st.button("確認領取並儲存", use_container_width=True):
                     final_code
                 ]
                 
-                # 🚀 執行寫入：確保對齊
+                # 執行寫入
                 sh.get_worksheet(0).append_row(save_data)
                 
                 st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
-                st.balloons() 
+                st.balloons()
                 
             except Exception as e:
                 st.error(f"❌ 寫入失敗，請檢查網址或權限: {str(e)}")
