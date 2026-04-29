@@ -38,7 +38,7 @@ def get_history():
     try:                     # <--- 這裡前面要有 4 個空白鍵
         return conn.read(ttl=0) # <--- 這裡前面要有 8 個空白鍵
     except:                  # <--- 這裡前面要有 4 個空白鍵
-        return pd.DataFrame(columns=["生成時間", "員工姓名", "供應商名", "商品品名", "編碼前綴", "流水號", "最終料號"])
+        return pd.DataFrame(columns=["生成時間", "員工姓名", "供應商名稱", "商品名稱", "編碼前綴", "流水號", "最終料號"])
 
 # --- 2. 算號邏輯優化 ---
 def get_next_sequence(prefix, df_history, length=4):
@@ -177,7 +177,7 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         
         is_duplicate = not refresh_df[
             (refresh_df['供應商名稱'] == final_v_name) & 
-            (refresh_df['產品名稱'] == final_p_name) & 
+            (refresh_df['商品名稱'] == final_p_name) & 
             (refresh_df['最終料號'] == actual_sku)
         ].empty
         
