@@ -166,8 +166,8 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         save_data = [
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         user_name,
-        selected_mfr,
-        selected_product,
+        v_choice,
+        p_choice,
         full_prefix,
         str(p_seq),
         final_sku
