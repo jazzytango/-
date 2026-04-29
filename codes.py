@@ -171,35 +171,25 @@ if st.button("確認領取並儲存", use_container_width=True):
 # --- 3. 儲存按鈕 ---
         if st.button("確認領取並儲存", type="primary"):
             try:
-                # 🛠️ 雙重保險：在按鈕內部重新組合要寫入的資料
+                # 重新組合要寫入的資料
                 save_data = [
                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     st.session_state.user_name,
                     selected_mfr,
                     selected_product,
                     prefix,
-                    str(next_seq),  # 確保序號是字串格式
+                    str(next_seq),
                     final_code
                 ]
                 
-                # 🚀 執行寫入：直接對 sh 指定第一個工作表
-                target_sheet = sh.get_worksheet(0)
-                target_sheet.append_row(save_data)
+                # 🚀 執行寫入：確保對齊
+                sh.get_worksheet(0).append_row(save_data)
                 
                 st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
                 st.balloons() 
                 
             except Exception as e:
-                st.error(f"❌ 寫入 Google Sheet 失敗: {str(e)}")        
+                st.error(f"❌ 寫入失敗，請檢查網址或權限: {str(e)}")
 
-# 這裡才是原本程式碼剩下的部分（例如顯示最近紀錄的 try...）  
-
-try:
-    st.write("### 📜 最近領取紀錄")
-    if not df_history.empty:
-        # 將資料反過來顯示（最新的在上面），並撐滿寬度
-        st.dataframe(df_history.iloc[::-1], use_container_width=True)
-    else:
-        st.info("目前資料庫尚無紀錄。")
-except Exception as e:
-    st.error(f"顯示歷史紀錄時發生錯誤: {e}")
+        # --- 4. 輔助資訊顯示 ---
+        st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
