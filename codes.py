@@ -166,8 +166,8 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
         save_data = [
         datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         user_name,
-        v_choice,
-        p_choice,
+        vendor_name if v_choice == "+ 新增供應商" else v_choice,  # 抓正確的供應商名
+        product_name if p_choice == "+ 新增品項" else p_choice, # 抓正確的商品名
         full_prefix,
         str(p_seq),
         final_sku
