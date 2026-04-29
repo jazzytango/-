@@ -160,18 +160,18 @@ st.code(final_sku, language="text")
 
         # --- 3. 儲存按鈕 ---
         # 這裡前面有 8 個空格，對齊 169 行的 else 邏輯
-    if st.button("確認領取並儲存", type="primary", use_container_width=True):
-        try:
+if st.button("確認領取並儲存", type="primary", use_container_width=True):
+    try:
                 # 這裡前面有 12 個空格 (比 if 多 4 格)
-                save_data = [
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    st.session_state.user_name,
-                    selected_mfr,
-                    selected_product,
-                    prefix,
-                    str(next_seq),
-                    final_code
-                ]
+            save_data = [
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                st.session_state.user_name,
+                selected_mfr,
+                selected_product,
+                prefix,
+                str(next_seq),
+                final_code
+            ]
                 
                 # 執行寫入
                 sh.get_worksheet(0).append_row(save_data)
@@ -179,7 +179,7 @@ st.code(final_sku, language="text")
                 st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
                 st.balloons()
                 
-        except Exception as e:
+    except Exception as e:
                 st.error(f"❌ 寫入失敗，請檢查網址或權限: {str(e)}")
 
         # --- 4. 輔助資訊顯示 ---
