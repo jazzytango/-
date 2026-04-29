@@ -180,7 +180,7 @@ if st.button("確認領取並儲存", type="primary", use_container_width=True):
             (refresh_df['產品名稱'] == final_p_name) & 
             (refresh_df['最終料號'] == actual_sku)
         ].empty
-
+        
         if is_duplicate:
             st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
         else:
