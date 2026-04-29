@@ -180,7 +180,7 @@ if st.button("確認領取並儲存", use_container_width=True):
                     next_seq,
                     final_code
                 ]
-                worksheet.append_row(new_row)
+                sh.get_worksheet(0).append_row(new_row)
                 st.success(f"✅ 儲存成功！料號 {final_code} 已寫入系統。")
                 st.balloons() 
             except Exception as e:
