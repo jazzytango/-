@@ -94,70 +94,55 @@ with col1:
 
 with col2:
     # 從歷史紀錄中過濾出符合此分類的供應商名單
-    existing_vendors = ["+ 新增供應商"]
-    if not df_history.empty:
-        # 過濾出相同類型(如 MFR)的現有廠商
-        v_mask = df_history["編碼前綴"].str.contains(f"{e_map[e_c]}-{g_map[g_c]}-{v_map[v_c]}")
-        v_list = df_history[v_mask]["供應商名"].unique().tolist()
-        existing_vendors.extend(v_list)
-    
-    v_choice = st.selectbox("選擇既有供應商", existing_vendors)
-    
-    if v_choice == "+ 新增供應商":
-        vendor_name = st.text_input("輸入新供應商全名")
-        # 算新廠商的流水號 (3位)
-        v_seq = get_next_sequence(base_v_prefix, df_history, 3)
-        final_v_prefix = f"{base_v_prefix}{v_seq}"
-    else:
-        vendor_name = v_choice
-        # 抓取該廠商已有的 ID
-        v_row = df_history[df_history["供應商名"] == v_choice].iloc[0]
-        # 從 A-TWN-MFR001-FB0001 拆出 A-TWN-MFR001
-        final_v_prefix = "-".join(v_row["最終料號"].split("-")[:3])
-        st.success(f"已鎖定供應商代碼：{final_v_prefix}")
+# --- Step 1. 供應商選擇 (動態連動版) ---
+        existing_vendors = ["+ 新增供應商"]
+        if not df_history.empty:
+            # 直接從歷史紀錄中抓取「所有」不重複的供應商名稱
+            v_list = sorted(df_history["供應商名稱"].unique().tolist())
+            existing_vendors.extend(v_list)
 
-# --- Step 2. 商品類型與序號 ---
-st.header("Step 2. 商品資訊")
-col3, col4 = st.columns(2)
+        v_choice = st.selectbox("選擇既有供應商", existing_vendors)
 
-with col3:
-    p_options = {
-        "K - 組合套組": "K", 
-        "P - 促銷品": "P", 
-        "FB - 食品飲料": "FB", 
-        "HP - 保健品": "HP", 
-        "BP - 美妝護理": "BP", 
-        "RA - 宗教藝品": "RA", 
-        "EA - 3C家電": "EA"
-    }
-    p_sel = st.selectbox("商品類型", list(p_options.keys()))
-    p_type = p_options[p_sel]
+        if v_choice == "+ 新增供應商":
+            vendor_name = st.text_input("請輸入新供應商全名")
+            # 這裡需要計算新供應商的流水號 (例如 MFR001)
+            v_seq = get_next_sequence(base_v_prefix, df_history, 3)
+            final_v_prefix = f"{base_v_prefix}{v_seq}"
+            final_v_name = vendor_name
+        else:
+            # 💡 既有供應商：從歷史紀錄中反推它的代碼 (例如 A-TWN-MFR001)
+            v_row = df_history[df_history["供應商名稱"] == v_choice].iloc[0]
+            # 這裡假設您的料號結構是 A-TWN-MFR001-RA... 拆出前三個段落
+            final_v_prefix = "-".join(v_row["最終料號"].split("-")[:3])
+            final_v_name = v_choice
+            st.success(f"已鎖定供應商代碼：{final_v_prefix}")
 
-with col4:
-    # 同理，檢查該廠商下是否已有相同類型的商品
-    existing_products = ["+ 新增品項"]
-    if not df_history.empty:
-        p_mask = (df_history["供應商名"] == vendor_name) & (df_history["最終料號"].str.contains(f"-{p_type}"))
-        p_list = df_history[p_mask]["商品品名"].unique().tolist()
-        existing_products.extend(p_list)
-    
-    p_choice = st.selectbox("選擇或查看既有品項", existing_products)
-    
-    if p_choice == "+ 新增品項":
-        product_name = st.text_input("輸入新商品品名")
-    else:
-        product_name = p_choice
-        st.warning(f"注意：此品項已存在，若再次領取將生成新的流水號")
+        # --- Step 2. 商品品項選擇 (根據供應商連動) ---
+        existing_products = ["+ 新增品項"]
+        if not df_history.empty and v_choice != "+ 新增供應商":
+            # 💡 關鍵：只抓取「該供應商」過去領過的品項
+            p_mask = df_history["供應商名稱"] == v_choice
+            p_list = sorted(df_history[p_mask]["商品品名"].unique().tolist())
+            existing_products.extend(p_list)
 
-# --- Step 3. 生成料號與儲存 ---
-full_prefix = f"{final_v_prefix}-{p_type}"
-p_seq = get_next_sequence(full_prefix, df_history, 4)
-final_sku = f"{full_prefix}{p_seq}"
+        p_choice = st.selectbox("選擇或查看既有品項", existing_products)
 
-st.divider()
-st.subheader("📋 預計生成的料號")
-st.code(final_sku, language="text")
+        if p_choice == "+ 新增品項":
+            product_name = st.text_input("請輸入新商品品名")
+            final_p_name = product_name
+        else:
+            final_p_name = p_choice
+            st.warning(f"注意：此品項已存在，若再次領取將生成新的流水號")
 
+    # --- Step 3. 生成料號與顯示 ---
+    # 此處確保 full_prefix 包含供應商與商品分類 (如 RA)
+    full_prefix = f"{final_v_prefix}-{p_type}" 
+    p_seq = get_next_sequence(full_prefix, df_history, 4)
+    final_sku = f"{full_prefix}{p_seq}"
+
+    st.divider()
+    st.subheader("📋 預計生成的料號")
+    st.code(final_sku, language="text")
 # --- 3. 儲存按鈕 (防撞 + 防重複版) ---
 if st.button("確認領取並儲存", type="primary", use_container_width=True):
     try:
