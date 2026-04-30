@@ -187,10 +187,10 @@ with col2:
                 st.success(f"🎉 儲存成功！領取料號：{actual_sku}")
                 st.balloons()
                 
-        except Exception as e:
-            # 📢 報錯敘述優化
-            st.error(f"❌ 哎呀！系統在儲存時卡住了。錯誤原因：{str(e)}")
-            st.info("💡 小撇步：請檢查網路連線，或確認 Google Sheet 沒有被其他人意外刪除欄位。")
+            except Exception as e:
+                # 📢 報錯敘述優化
+                st.error(f"❌ 哎呀！系統在儲存時卡住了。錯誤原因：{str(e)}")
+                st.info("💡 小撇步：請檢查網路連線，或確認 Google Sheet 沒有被其他人意外刪除欄位。")
                     
-            # --- 4. 輔助資訊顯示 ---
-            st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
+# --- 4. 輔助資訊顯示 ---
+st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
