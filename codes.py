@@ -134,63 +134,63 @@ with col2:
             final_p_name = p_choice
             st.warning(f"注意：此品項已存在，若再次領取將生成新的流水號")
 
-    # --- Step 3. 生成料號與顯示 ---
-    # 此處確保 full_prefix 包含供應商與商品分類 (如 RA)
-    full_prefix = f"{final_v_prefix}-{p_type}" 
-    p_seq = get_next_sequence(full_prefix, df_history, 4)
-    final_sku = f"{full_prefix}{p_seq}"
-    
-    st.divider()
-    st.subheader("📋 預計生成的料號")
-    st.code(final_sku, language="text")
-    # --- 3. 儲存按鈕 (防撞 + 防重複版) ---
-    if st.button("確認領取並儲存", type="primary", use_container_width=True):
-    try:
-    # 🔄 第一步：按下瞬間重新讀取 Sheet，確保拿到的是「此時此刻」最新的資料
-    # 避免兩個人同時打開網頁看到同一個號碼
-    refresh_data = sh.get_worksheet(0).get_all_records()
-    refresh_df = pd.DataFrame(refresh_data)
-    
-    # 🔄 第二步：重新計算「真正的」下一個序號
-    actual_seq = get_next_sequence(full_prefix, refresh_df, 4)
-    actual_sku = f"{full_prefix}{actual_seq}"
-    
-    # 🔍 第三步：防重複檢查 (如果同廠商、同商品、同料號已存在，就不重複寫入)
-    # 取得正確的廠商與產品名稱
-        final_v_name = vendor_name if v_choice == "+ 新增供應商" else v_choice
-        final_p_name = product_name if p_choice == "+ 新增品項" else p_choice
-        
-        # 🔄 修改後的防重複檢查邏輯
-        is_duplicate = False
-        if not refresh_df.empty:
-            is_duplicate = not refresh_df[
-                (refresh_df.iloc[:, 2] == final_v_name) &   # 第 3 欄 (C欄)
-                (refresh_df.iloc[:, 3] == final_p_name) &   # 第 4 欄 (D欄)
-                (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
-            ].empty
-        
-        if is_duplicate:
-            st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
-        else:
-            # 🚀 第四步：打包資料並寫入
-            save_data = [
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                user_name,
-                final_v_name,
-                final_p_name,
-                full_prefix,
-                str(actual_seq),
-                actual_sku
-            ]
+        # --- Step 3. 生成料號與顯示 ---
+        # 此處確保 full_prefix 包含供應商與商品分類 (如 RA)
+            full_prefix = f"{final_v_prefix}-{p_type}" 
+            p_seq = get_next_sequence(full_prefix, df_history, 4)
+            final_sku = f"{full_prefix}{p_seq}"
             
-            sh.get_worksheet(0).append_row(save_data)
-            st.success(f"🎉 儲存成功！領取料號：{actual_sku}")
-            st.balloons()
+            st.divider()
+            st.subheader("📋 預計生成的料號")
+            st.code(final_sku, language="text")
+        # --- 3. 儲存按鈕 (防撞 + 防重複版) ---
+        if st.button("確認領取並儲存", type="primary", use_container_width=True):
+        try:
+        # 🔄 第一步：按下瞬間重新讀取 Sheet，確保拿到的是「此時此刻」最新的資料
+        # 避免兩個人同時打開網頁看到同一個號碼
+        refresh_data = sh.get_worksheet(0).get_all_records()
+        refresh_df = pd.DataFrame(refresh_data)
+        
+        # 🔄 第二步：重新計算「真正的」下一個序號
+        actual_seq = get_next_sequence(full_prefix, refresh_df, 4)
+        actual_sku = f"{full_prefix}{actual_seq}"
+        
+        # 🔍 第三步：防重複檢查 (如果同廠商、同商品、同料號已存在，就不重複寫入)
+        # 取得正確的廠商與產品名稱
+            final_v_name = vendor_name if v_choice == "+ 新增供應商" else v_choice
+            final_p_name = product_name if p_choice == "+ 新增品項" else p_choice
             
-    except Exception as e:
-        # 📢 報錯敘述優化
-        st.error(f"❌ 哎呀！系統在儲存時卡住了。錯誤原因：{str(e)}")
-        st.info("💡 小撇步：請檢查網路連線，或確認 Google Sheet 沒有被其他人意外刪除欄位。")
+            # 🔄 修改後的防重複檢查邏輯
+            is_duplicate = False
+            if not refresh_df.empty:
+                is_duplicate = not refresh_df[
+                    (refresh_df.iloc[:, 2] == final_v_name) &   # 第 3 欄 (C欄)
+                    (refresh_df.iloc[:, 3] == final_p_name) &   # 第 4 欄 (D欄)
+                    (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
+                ].empty
+            
+            if is_duplicate:
+                st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
+            else:
+                # 🚀 第四步：打包資料並寫入
+                save_data = [
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    user_name,
+                    final_v_name,
+                    final_p_name,
+                    full_prefix,
+                    str(actual_seq),
+                    actual_sku
+                ]
                 
-        # --- 4. 輔助資訊顯示 ---
-        st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
+                sh.get_worksheet(0).append_row(save_data)
+                st.success(f"🎉 儲存成功！領取料號：{actual_sku}")
+                st.balloons()
+                
+        except Exception as e:
+            # 📢 報錯敘述優化
+            st.error(f"❌ 哎呀！系統在儲存時卡住了。錯誤原因：{str(e)}")
+            st.info("💡 小撇步：請檢查網路連線，或確認 Google Sheet 沒有被其他人意外刪除欄位。")
+                    
+            # --- 4. 輔助資訊顯示 ---
+            st.info(f"💡 提示：點擊上方按鈕後，資料將自動同步至公司 Google 試算表。")
