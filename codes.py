@@ -5,7 +5,7 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 
 # --- 1. 設定與連線 ---
-st.set_page_config(page_title="播商料號自動生成系統", layout="centered")
+st.set_page_config(page_title="播商商品號自動生成系統", layout="centered")
 
 # Google Sheets 連線設定
 scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -13,7 +13,7 @@ creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"],
 client = gspread.authorize(creds)
 
 # 請更換為您的試算表名稱
-spreadsheet_name = "Your_Google_Sheet_Name" 
+spreadsheet_name = "播商編號資料庫" 
 sh = client.open(spreadsheet_name)
 ws = sh.get_worksheet(0)
 
