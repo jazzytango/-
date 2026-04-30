@@ -169,19 +169,19 @@ with col2:
                         (refresh_df.iloc[:, 6] == actual_sku)      # 第 7 欄 (G欄)
                     ].empty
             
-            if is_duplicate:
-                st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
-            else:
-                # 🚀 第四步：打包資料並寫入
-                save_data = [
-                    datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    user_name,
-                    final_v_name,
-                    final_p_name,
-                    full_prefix,
-                    str(actual_seq),
-                    actual_sku
-                ]
+                if is_duplicate:
+                    st.warning(f"⚠️ 偵測到重複：{final_v_name} 的 {final_p_name} 已經領過 {actual_sku} 了！")
+                else:
+                    # 🚀 第四步：打包資料並寫入
+                    save_data = [
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        user_name,
+                        final_v_name,
+                        final_p_name,
+                        full_prefix,
+                        str(actual_seq),
+                        actual_sku
+                    ]
                 
                 sh.get_worksheet(0).append_row(save_data)
                 st.success(f"🎉 儲存成功！領取料號：{actual_sku}")
