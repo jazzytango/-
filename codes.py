@@ -13,7 +13,7 @@ creds = Credentials.from_service_account_info(st.secrets["gcp_service_account"],
 client = gspread.authorize(creds)
 
 # 請更換為您的試算表名稱
-spreadsheet_name = "播商編號資料庫" 
+spreadsheet_name = "播商編碼資料庫" 
 sh = client.open(spreadsheet_name)
 ws = sh.get_worksheet(0)
 
