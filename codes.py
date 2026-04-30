@@ -75,9 +75,21 @@ with col_u2:
         st.rerun()
 
 # 讀取最新歷史紀錄
-records = ws.get_all_records()
-df_history = pd.DataFrame(records)
+# --- 🚀 強力除錯讀取法 (這段會解決所有標題找不到的問題) ---
+all_values = ws.get_all_values()
 
+if not all_values or len(all_values) <= 1:
+    # 如果只有標題或完全沒資料，建立一個空表格
+    df_history = pd.DataFrame(columns=["時間戳記", "領取人", "供應商名稱", "商品品名", "前綴", "序號", "最終料號"])
+else:
+    # 手動指定第一列為標題，剩下的為資料
+    df_history = pd.DataFrame(all_values[1:], columns=all_values[0])
+
+# 保險機制：確保這一欄存在且是文字格式
+if "最終料號" not in df_history.columns:
+    df_history["最終料號"] = ""
+df_history["最終料號"] = df_history["最終料號"].astype(str)
+# --- 🚀 結束 ---
 st.divider()
 
 # --- STEP 1: 分類設定 ---
